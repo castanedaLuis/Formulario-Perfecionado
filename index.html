@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    
+    <style>
+        @media (min-width: 992px) {
+            .alto-100{
+                height:100vh;
+            }
+            .fondo{
+                background-color:red;
+            }
+        }
+    </style>
+    <script>
+        $(function () {
+        $("#fechaInicial").datepicker();
+        });
+    </script>
+
+    <script>
+        $(function () {
+        $("#fechafinal").datepicker()({
+            dateFormat: "yy-mm-dd"
+            });
+        });
+    </script>
+
+    <script>
+        $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '< Ant',
+        nextText: 'Sig >',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['es']);
+       $(function () {
+       $("#fecha").datepicker();
+       });
+    </script>
+
+    <script>
+    function enviar(){
+        var id_me = document.getElementById('id_me').value;
+        var name_user = document.getElementById('name_user').value;
+        var correo = document.getElementById('correo').value;
+        var contraseña = document.getElementById('contraseña').value;
+        var fechaInicial = document.getElementById('fechaInicial').value;
+        var fechafinal = document.getElementById('fechafinal').value;
+        var dataAll = 'id_me='+id_me+
+                    '&name_user='+name_user+
+                    '&correo='+correo+
+                    '&contraseña='+contraseña+
+                    '&fechaInicial='+fechaInicial+
+                    '&fechafinal='+fechafinal;
+        
+        $.ajax({
+            type:'post',
+            url:'datos.php',
+            data:dataAll,
+            success:function(res){
+                $("#respa").html(res);
+                $("#id_me").val('');
+                $("#name_user").val('');
+                $("#correo").val('');
+                $("#contraseña").val('');
+                $("#fechaInicial").val('');
+                $("#fechafinal").val('');
+            }
+        });
+        return false;
+    }
+    function visualizar(){
+            $.ajax({
+            type:'post',
+            url:'visualizar_datos.php',
+            success:function(resp){
+                var js = JSON.parse(resp);
+                var tabla;
+                for(var i =0; i<js.length; i++){
+                    tabla += `<tr><td>`+js[i].id_user+`</td><td>`+js[i].name_user+`</td></tr>`
+                }
+                
+                $("#visu").html(tabla);
+                alert('Actualizado Datos');
+                
+            }
+        });
+	return false;
+    }
+    function contar(){
+            $.ajax({
+            type:'post',
+            url:'conteo.php',
+            success:function(resp){
+                var js = JSON.parse(resp);
+                $("#conteo").html(js);
+                //alert('Actualizado Datos');
+            }
+        });
+	return false;
+    }
+    </script> 
+     
+
+</head>
+<body>
+    <div class="row bg-dark" style="justify-content: center;">
+        <div class="col-4">
+            <div class="card m-4">
+                <div class="card-header">
+                    <h4>Añadir un usuario</h4>
+                </div>
+
+            </div>
+            <form class="card-body" action="datos.php" method="POST" id="usuario-form" onsubmit="return enviar();">
+                <div class="form-group">
+                    <label style="color: aliceblue;">Ingrese su ID</label>
+                    <input type="text" class="form-control mt-2" name="id_me" placeholder="201536048" id="id_me" required minlength="2" maxlength="9">
+                </div>
+                <div class="form-group">
+                    <label style="color: aliceblue;">Ingrese Nombre Completo</label>
+                    <input type="text" class="form-control mt-2" name="name_user" placeholder="201536048" id="name_user"required>
+                </div>
+                
+                <div class="form-group">
+                    <label style="color: aliceblue;">Ingrese su correo</label>
+                    <input type="email" class="form-control mt-2" name="correo" placeholder="google@jlcastaneda.com" id="correo"required>
+                </div>
+
+                <div class="form-group">
+                    <label style="color: aliceblue;">Contraseña</label>
+                    <input type="password" class="form-control mt-2" name="contraseña" placeholder="*******" id="contraseña"required>
+                </div>
+
+                <div class="form-group">
+                    <label style="color: aliceblue;">Fecha de Nacimiento</label>
+                    <input type="fechainicial" class="form-control mt-2" name="fechaInicial" id="fechaInicial" placeholder="12/12/12" required/>
+                </div>
+                <div class="form-group">
+                    <label style="color: aliceblue;">Fecha de Ingreso</label>
+                    <input type="fechafinal" class="form-control mt-2" name="fechafinal" id="fechafinal" placeholder="12/12/12" required/>
+                </div>
+                
+                <div class="d-grid gap-2 col-10 mx-auto">
+                    <input type="submit"  id ="Registrar" class="btn btn-primary btn-block mt-2" value="Registrar">
+                </div>
+            </form>
+        </div>
+
+
+        <!--SEGUNDA PARTE-->
+        <div class="col-3">
+            <div class="card m-4">
+                <div class="card-header">
+                    <h4>Visualizar datos DB</h4>
+                </div>
+            </div>
+            <div class="Despues">
+                <form class="App card-body" action="visualizar_datos.php" method="POST" id="usuario-form2" onsubmit="return visualizar();">
+                    
+                    <div class="d-grid gap-2 col-10 mx-auto">
+                        <input type="submit" id ="VerRegistros" class="btn btn-success btn-block mt-2" value="Ver">
+                    </div>
+                </form>
+
+                <p id="respa" style="color: aliceblue;"></p>
+                <!--<p id="visu" style="color: aliceblue;"></p> -->
+                <table class="table table-dark" style="color: aliceblue;">
+                    <thead>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                    </thead>
+                    <tbody id="visu">
+    
+                    </tbody>
+                </table>
+            </div>
+        </div>  
+        
+        <!--TERCERA PARTE-->
+        <div class="col-1 m-4">
+            <div style="color: aliceblue;">
+                <p id="conteo">Version 2 </p>
+            </div>
+        </div>
+
+    </div>
+
+    
+      <script src="./index.js" type="module"></script>
+</body>
+</html>
